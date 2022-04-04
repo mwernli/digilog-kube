@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: digilog
+    tier: storage
+    run: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: digilog
+      tier: storage
+      run: postgres
+  template:
+    metadata:
+      labels:
+        app: digilog
+        tier: storage
+        run: postgres
+    spec:
+      containers:
+      - name: digilog-postgres
+        image: postgres:13.0
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+              optional: false
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: user
+              optional: false
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-cm
+              key: databaseName
+              optional: false
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: "/var/lib/postgresql/data"
+          name: postgres-data
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-pvc

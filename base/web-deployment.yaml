@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: digilog
+    tier: frontend
+    run: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: digilog
+      tier: frontend
+      run: web
+  template:
+    metadata:
+      labels:
+        app: digilog
+        tier: frontend
+        run: web
+    spec:
+      containers:
+      - name: digilog-web
+        image: trephor/digilog-web
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+              optional: false
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: user
+              optional: false
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-cm
+              key: databaseName
+              optional: false
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: password
+              optional: false
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: user
+              optional: false
+        ports:
+        - containerPort: 5000

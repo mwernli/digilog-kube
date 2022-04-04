@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fluentd-deployment
+  labels:
+    app: digilog
+    tier: logging
+    run: fluentd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: digilog
+      tier: logging
+      run: fluentd
+  template:
+    metadata:
+      labels:
+        app: digilog
+        tier: logging
+        run: fluentd
+    spec:
+      containers:
+      - name: digilog-fluentd
+        image: grafana/fluent-plugin-loki:main-d320873-amd64
+        ports:
+        - containerPort: 24224
+          protocol: TCP
+        - containerPort: 24224
+          protocol: UDP
+        env:
+        - name: LOKI_URL
+          value: 'http://loki-service:3100'

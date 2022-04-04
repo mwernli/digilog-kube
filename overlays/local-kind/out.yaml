@@ -1,0 +1,395 @@
+apiVersion: v1
+data:
+  databaseName: digilog
+kind: ConfigMap
+metadata:
+  name: postgres-cm
+---
+apiVersion: v1
+data:
+  password: bW9uZ29EYlBhc3M=
+  user: bW9uZ29EYlVzZXI=
+kind: Secret
+metadata:
+  name: mongodb-secret
+type: Opaque
+---
+apiVersion: v1
+data:
+  password: ZGlnaWxvZ0RiUGFzcw==
+  user: ZGlnaWxvZw==
+kind: Secret
+metadata:
+  name: postgres-secret
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    app: digilog
+    run: mongodb
+    tier: storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+  - port: 5432
+    protocol: TCP
+  selector:
+    app: digilog
+    run: postgres
+    tier: storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: digilog
+    run: web
+    tier: frontend
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    type: local
+  name: pv-1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 8Gi
+  hostPath:
+    path: /mnt/pv-1
+  storageClassName: slow
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    type: local
+  name: pv-2
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 8Gi
+  hostPath:
+    path: /mnt/pv-2
+  storageClassName: slow
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: slow
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: slow
+  volumeMode: Filesystem
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: digilog
+    run: mongodb
+    tier: storage
+  name: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: digilog
+      run: mongodb
+      tier: storage
+  template:
+    metadata:
+      labels:
+        app: digilog
+        run: mongodb
+        tier: storage
+    spec:
+      containers:
+      - env:
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mongodb-secret
+              optional: false
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: mongodb-secret
+              optional: false
+        image: mongo:5.0.6
+        name: digilog-mongodb
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongodb-data
+      volumes:
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: mongodb-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: digilog
+    run: postgres
+    tier: storage
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: digilog
+      run: postgres
+      tier: storage
+  template:
+    metadata:
+      labels:
+        app: digilog
+        run: postgres
+        tier: storage
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: databaseName
+              name: postgres-cm
+              optional: false
+        image: postgres:13.0
+        name: digilog-postgres
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-data
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: digilog
+    run: scrapy
+    tier: crawling
+  name: scrapy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: digilog
+      run: scrapy
+      tier: crawling
+  template:
+    metadata:
+      labels:
+        app: digilog
+        run: scrapy
+        tier: crawling
+    spec:
+      containers:
+      - args:
+        - -c
+        - python
+        - ./src/queue_processor.py
+        command:
+        - /bin/sh
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: databaseName
+              name: postgres-cm
+              optional: false
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mongodb-secret
+              optional: false
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: mongodb-secret
+              optional: false
+        image: trephor/digilog-scrapy
+        name: digilog-scrapy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: digilog
+    run: web
+    tier: frontend
+  name: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: digilog
+      run: web
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: digilog
+        run: web
+        tier: frontend
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: databaseName
+              name: postgres-cm
+              optional: false
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mongodb-secret
+              optional: false
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: mongodb-secret
+              optional: false
+        image: trephor/digilog-web
+        name: digilog-web
+        ports:
+        - containerPort: 5000
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: flyway-migrate
+spec:
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      name: flyway-migrate
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: databaseName
+              name: postgres-cm
+              optional: false
+        image: trephor/digilog-flyway
+        name: digilog-flyway
+      restartPolicy: OnFailure
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: web
+            port:
+              number: 80
+        path: /
+        pathType: Prefix

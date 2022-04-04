@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loki-deployment
+  labels:
+    app: digilog
+    tier: logging
+    run: loki
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: digilog
+      tier: logging
+      run: loki
+  template:
+    metadata:
+      labels:
+        app: digilog
+        tier: logging
+        run: loki
+    spec:
+      containers:
+      - name: digilog-loki
+        image: grafana/loki:2.4.2
+        ports:
+        - containerPort: 3100
