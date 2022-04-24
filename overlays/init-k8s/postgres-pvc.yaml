@@ -5,5 +5,5 @@ metadata:
 spec:
   resources:
     requests:
-      storage: 8Gi
+      storage: 20Gi
   storageClassName: csi-cinder-sc-delete

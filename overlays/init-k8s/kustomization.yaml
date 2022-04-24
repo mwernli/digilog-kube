@@ -3,8 +3,16 @@ kind: Kustomization
 bases:
   - ../../base
 patchesStrategicMerge:
-  - postgres-deployment.yaml
   - postgres-pvc.yaml
-  - postgres-service.yaml
-  - postgres-cm.yaml
+  - mongodb-pvc.yaml
   - flyway-job.yaml
+  - postgres-deployment.yaml
+  - mongodb-deployment.yaml
+  - scrapy-deployment.yaml
+  - web-deployment.yaml
+
+patches:
+  - target:
+      kind: Ingress
+      name: web-ingress
+    path: web-ingress-patch.json

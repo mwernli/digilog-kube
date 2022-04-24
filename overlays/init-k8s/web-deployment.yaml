@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: web
 spec:
   template:
     spec:
       containers:
-      - name: digilog-postgres
+      - name: digilog-web
         resources:
           limits:
             cpu: 1
-            memory: 3Gi
+            memory: 2Gi
           requests:
             cpu: 1
-            memory: 3Gi
+            memory: 2Gi

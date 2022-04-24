@@ -10,4 +10,3 @@ resources:
 patchesStrategicMerge:
   - postgres-pvc.yaml
   - mongodb-pvc.yaml
-  - flyway-job.yaml
