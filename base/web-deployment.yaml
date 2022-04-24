@@ -59,7 +59,7 @@ spec:
         volumeMounts:
           - mountPath: /etc/gunicorn.conf.py
             name: gunicorn-conf
-            subPath: /etc/gunicorn.conf.py
+            subPath: gunicorn.conf.py
           - mountPath: /var/log/gunicorn/access
             name: gunicorn-access
           - mountPath: /var/log/gunicorn/error
