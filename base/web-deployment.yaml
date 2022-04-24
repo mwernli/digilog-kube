@@ -56,3 +56,31 @@ spec:
               optional: false
         ports:
         - containerPort: 5000
+      - name: web-fluentd
+        image: grafana/fluent-plugin-loki:main-d320873-amd64
+        env:
+          - name: LOKI_URL
+            value: 'http://loki-service:3100'
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: CONTAINER_NAME
+            value: digilog-fluentd
+        volumeMounts:
+          - mountPath: /var/log
+            name: logs
+      volumes:
+        - name: logs
+          hostPath:
+            path: /var/log/pods/
+            type: Directory
+
