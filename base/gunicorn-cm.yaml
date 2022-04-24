@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gunicorn-cm
+data:
+  gunicorn.conf.py: |
+    accesslog = "/var/log/gunicorn/access"
+    errorlog = "/var/log/gunicorn/access"
+  

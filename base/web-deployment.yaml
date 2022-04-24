@@ -56,6 +56,14 @@ spec:
               optional: false
         ports:
         - containerPort: 5000
+        volumeMounts:
+          - mountPath: /etc/gunicorn.conf.py
+            name: gunicorn-conf
+            subPath: /etc/gunicorn.conf.py
+          - mountPath: /var/log/gunicorn/access
+            name: gunicorn-access
+          - mountPath: /var/log/gunicorn/error
+            name: gunicorn-error
       - name: web-fluentd
         image: grafana/fluent-plugin-loki:main-d320873-amd64
         env:
@@ -76,11 +84,15 @@ spec:
           - name: CONTAINER_NAME
             value: digilog-fluentd
         volumeMounts:
-          - mountPath: /var/log
-            name: logs
+          - mountPath: /var/log/access
+            name: gunicorn-access
+          - mountPath: /var/log/error
+            name: gunicorn-error
       volumes:
-        - name: logs
-          hostPath:
-            path: /var/log/pods/
-            type: Directory
-
+        - name: gunicorn-conf
+          configMap:
+            name: gunicorn-cm
+        - name: gunicorn-access
+          emptyDir: {}
+        - name: gunicorn-error
+          emptyDir: {}
