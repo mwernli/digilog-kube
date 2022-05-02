@@ -1,7 +1,0 @@
-[
-  {
-    "op": "add",
-    "path": "/spec/rules/0/host",
-    "value": "digilog.k8s.init-lab.ch"
-  }
-]

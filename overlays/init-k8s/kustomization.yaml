@@ -15,4 +15,4 @@ patches:
   - target:
       kind: Ingress
       name: web-ingress
-    path: web-ingress-patch.json
+    path: ingress-patch.json
