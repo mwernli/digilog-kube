@@ -6,11 +6,11 @@ spec:
   template:
     spec:
       containers:
-      - name: digilog-postgres
-        resources:
-          limits:
-            cpu: 1
-            memory: 3Gi
-          requests:
-            cpu: 1
-            memory: 3Gi
+        - name: digilog-postgres
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 3Gi
+            requests:
+              cpu: 1000m
+              memory: 3Gi

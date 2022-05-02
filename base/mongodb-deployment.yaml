@@ -21,28 +21,28 @@ spec:
         run: mongodb
     spec:
       containers:
-      - name: digilog-mongodb
-        image: mongo:5.0.6
-        env:
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: password
-              optional: false
-        - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: user
-              optional: false
-        ports:
-        - containerPort: 27017
-        volumeMounts:
-        - mountPath: "/data/db"
-          name: mongodb-data
-          subPath: mongodb
+        - name: digilog-mongodb
+          image: mongo:5.0.6
+          env:
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: password
+                  optional: false
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: user
+                  optional: false
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - mountPath: "/data/db"
+              name: mongodb-data
+              subPath: mongodb
       volumes:
-      - name: mongodb-data
-        persistentVolumeClaim:
-          claimName: mongodb-pvc
+        - name: mongodb-data
+          persistentVolumeClaim:
+            claimName: mongodb-pvc

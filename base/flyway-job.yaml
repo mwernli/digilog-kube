@@ -10,25 +10,25 @@ spec:
       name: flyway-migrate
     spec:
       containers:
-      - name: digilog-flyway
-        image: trephor/digilog-flyway
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: password
-              optional: false
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: user
-              optional: false
-        - name: POSTGRES_DB
-          valueFrom:
-           configMapKeyRef:
-             name: postgres-cm
-             key: databaseName
-             optional: false
+        - name: digilog-flyway
+          image: trephor/digilog-flyway
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+                  optional: false
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: user
+                  optional: false
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-cm
+                  key: databaseName
+                  optional: false
       restartPolicy: OnFailure

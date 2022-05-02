@@ -4,21 +4,21 @@ metadata:
   name: ingress
 spec:
   rules:
-  - http:
-      paths:
-      - backend:
-          service:
-            name: web
-            port:
-              number: 80
-        path: /
-        pathType: Prefix
-  - http:
-      paths:
-      - backend:
-          service:
-            name: grafana
-            port:
-              number: 3000
-        path: /
-        pathType: Prefix
+    - http:
+        paths:
+          - backend:
+              service:
+                name: web
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - http:
+        paths:
+          - backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix

@@ -21,14 +21,14 @@ spec:
         run: grafana
     spec:
       containers:
-      - name: digilog-grafana
-        image: grafana/grafana:8.4.3
-        ports:
-        - containerPort: 3000
-        volumeMounts:
-          - mountPath: /var/lib/grafana
-            name: grafana-vol
-            subPath: grafana
+        - name: digilog-grafana
+          image: grafana/grafana:8.4.3
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-vol
+              subPath: grafana
       volumes:
         - name: grafana-vol
           persistentVolumeClaim:

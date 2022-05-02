@@ -8,12 +8,12 @@ metadata:
     run: fluentd
 spec:
   ports:
-  - name: digilog-fluentd-tcp
-    port: 24224
-    protocol: TCP
-  - name: digilog-fluentd-udp
-    port: 24224
-    protocol: UDP
+    - name: digilog-fluentd-tcp
+      port: 24224
+      protocol: TCP
+    - name: digilog-fluentd-udp
+      port: 24224
+      protocol: UDP
   selector:
     app: digilog
     tier: logging

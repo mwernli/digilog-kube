@@ -6,11 +6,11 @@ spec:
   template:
     spec:
       containers:
-      - name: digilog-flyway
-        resources:
-          limits:
-            cpu: 0.25
-            memory: 1Gi
-          requests:
-            cpu: 0.25
-            memory: 1Gi
+        - name: digilog-flyway
+          resources:
+            limits:
+              cpu: 250m
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 1Gi

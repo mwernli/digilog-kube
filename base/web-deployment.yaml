@@ -21,62 +21,62 @@ spec:
         run: web
     spec:
       containers:
-      - name: digilog-web
-        image: trephor/digilog-web
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: password
-              optional: false
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: user
-              optional: false
-        - name: POSTGRES_DB
-          valueFrom:
-            configMapKeyRef:
-              name: postgres-cm
-              key: databaseName
-              optional: false
-        - name: MONGODB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: password
-              optional: false
-        - name: MONGODB_USER
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: user
-              optional: false
-        ports:
-        - containerPort: 5000
-        volumeMounts:
-          - mountPath: /etc/config
-            name: gunicorn-conf
-          - mountPath: /var/log/gunicorn
-            name: gunicorn-logs
-      - name: web-fluentd
-        image: grafana/fluent-plugin-loki:main-d320873-amd64
-        env:
-          - name: LOKI_URL
-            value: "http://$(LOKI_SERVICE_HOST):$(LOKI_SERVICE_PORT)"
-        volumeMounts:
-          - mountPath: /var/log/gunicorn
-            name: gunicorn-logs
-          - mountPath: /fluentd/etc
-            name: fluentd-conf
+        - name: digilog-web
+          image: trephor/digilog-web
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+                  optional: false
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: user
+                  optional: false
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-cm
+                  key: databaseName
+                  optional: false
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: password
+                  optional: false
+            - name: MONGODB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: user
+                  optional: false
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - mountPath: /etc/config
+              name: gunicorn-conf
+            - mountPath: /var/log/gunicorn
+              name: gunicorn-logs
+        - name: web-fluentd
+          image: grafana/fluent-plugin-loki:main-d320873-amd64
+          env:
+            - name: LOKI_URL
+              value: "http://$(LOKI_SERVICE_HOST):$(LOKI_SERVICE_PORT)"
+          volumeMounts:
+            - mountPath: /var/log/gunicorn
+              name: gunicorn-logs
+            - mountPath: /fluentd/etc
+              name: fluentd-conf
       volumes:
         - name: gunicorn-conf
           configMap:
             name: gunicorn-cm
         - name: gunicorn-logs
-          emptyDir: {}
+          emptyDir: { }
         - name: fluentd-conf
           configMap:
             name: web-fluent-cm

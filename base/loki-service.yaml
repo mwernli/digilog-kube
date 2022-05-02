@@ -8,8 +8,8 @@ metadata:
     run: loki
 spec:
   ports:
-  - port: 3100
-    protocol: TCP
+    - port: 3100
+      protocol: TCP
   selector:
     app: digilog
     tier: logging
