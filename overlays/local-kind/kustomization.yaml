@@ -6,9 +6,17 @@ resources:
   - pv-1.yaml
   - pv-2.yaml
   - pv-3.yaml
+  - pv-4.yaml
   - postgres-secret.yaml
   - mongodb-secret.yaml
+  - ingress-provider.yaml
 patchesStrategicMerge:
   - postgres-pvc.yaml
   - mongodb-pvc.yaml
   - loki-pvc.yaml
+  - grafana-pvc.yaml
+patches:
+  - target:
+      kind: Ingress
+      name: ingress
+    path: ingress-patch.json

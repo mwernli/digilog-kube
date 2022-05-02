@@ -25,3 +25,11 @@ spec:
         image: grafana/grafana:8.4.3
         ports:
         - containerPort: 3000
+        volumeMounts:
+          - mountPath: /var/lib/grafana
+            name: grafana-vol
+            subPath: grafana
+      volumes:
+        - name: grafana-vol
+          persistentVolumeClaim:
+            claimName: grafana-pvc

@@ -5,5 +5,5 @@ metadata:
 data:
   gunicorn.conf.py: |
     accesslog = "/var/log/gunicorn/access.log"
-    errorlog = "/var/log/gunicorn/error.log"
+    errorlog = "-"
   
