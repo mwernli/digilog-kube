@@ -6,4 +6,8 @@ spec:
   resources:
     requests:
       storage: 8Gi
+  selector:
+    matchLabels:
+      type: local
+      run: loki
   storageClassName: slow

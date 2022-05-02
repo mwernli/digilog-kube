@@ -6,4 +6,8 @@ spec:
   resources:
     requests:
       storage: 2Gi
+  selector:
+    matchLabels:
+      type: local
+      run: grafana
   storageClassName: slow

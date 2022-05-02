@@ -4,6 +4,7 @@ metadata:
   name: pv-2
   labels:
     type: local
+    run: loki
 spec:
   storageClassName: slow
   capacity:

@@ -4,6 +4,7 @@ metadata:
   name: pv-1
   labels:
     type: local
+    run: postgres
 spec:
   storageClassName: slow
   capacity:

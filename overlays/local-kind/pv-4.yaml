@@ -4,6 +4,7 @@ metadata:
   name: pv-4
   labels:
     type: local
+    run: grafana
 spec:
   storageClassName: slow
   capacity:
