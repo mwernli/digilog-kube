@@ -5,8 +5,10 @@ bases:
 resources:
   - pv-1.yaml
   - pv-2.yaml
+  - pv-3.yaml
   - postgres-secret.yaml
   - mongodb-secret.yaml
 patchesStrategicMerge:
   - postgres-pvc.yaml
   - mongodb-pvc.yaml
+  - loki-pvc.yaml

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: loki-deployment
+  name: loki
   labels:
     app: digilog
     tier: logging

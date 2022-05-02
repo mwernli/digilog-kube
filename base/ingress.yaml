@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: web-ingress
+  name: ingress
 spec:
   rules:
   - http:
@@ -12,4 +12,11 @@ spec:
             port:
               number: 80
         path: /
+        pathType: Prefix
+      - backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+        path: /grafana
         pathType: Prefix

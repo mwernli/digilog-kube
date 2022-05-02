@@ -3,11 +3,11 @@ kind: ConfigMap
 metadata:
   name: web-fluent-cm
 data:
-  fluentd.conf: |
+  fluent.conf: |
     <source>
       @type tail
-      path "/var/log/#{ENV['POD_NAMESPACE']}_#{ENV['POD_NAME']}_#{ENV['POD_UID']}/#{ENV['CONTAINER_NAME']}/*"
-      pos_file /etc/log.pos
+      path "/var/log/gunicorn/access.log"
+      pos_file /var/log/gunicorn/access.pos
       format apache2
       tag web.access-logs
     </source>

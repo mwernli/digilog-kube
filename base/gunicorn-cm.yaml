@@ -4,6 +4,6 @@ metadata:
   name: gunicorn-cm
 data:
   gunicorn.conf.py: |
-    accesslog = "/var/log/gunicorn/access"
-    errorlog = "/var/log/gunicorn/access"
+    accesslog = "/var/log/gunicorn/access.log"
+    errorlog = "/var/log/gunicorn/error.log"
   

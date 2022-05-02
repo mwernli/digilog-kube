@@ -57,42 +57,26 @@ spec:
         ports:
         - containerPort: 5000
         volumeMounts:
-          - mountPath: /etc/gunicorn.conf.py
+          - mountPath: /etc/config
             name: gunicorn-conf
-            subPath: gunicorn.conf.py
-          - mountPath: /var/log/gunicorn/access
-            name: gunicorn-access
-          - mountPath: /var/log/gunicorn/error
-            name: gunicorn-error
+          - mountPath: /var/log/gunicorn
+            name: gunicorn-logs
       - name: web-fluentd
         image: grafana/fluent-plugin-loki:main-d320873-amd64
         env:
           - name: LOKI_URL
-            value: 'http://loki-service:3100'
-          - name: POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: POD_UID
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.uid
-          - name: CONTAINER_NAME
-            value: digilog-fluentd
+            value: "http://$(LOKI_SERVICE_HOST):$(LOKI_SERVICE_PORT)"
         volumeMounts:
-          - mountPath: /var/log/access
-            name: gunicorn-access
-          - mountPath: /var/log/error
-            name: gunicorn-error
+          - mountPath: /var/log/gunicorn
+            name: gunicorn-logs
+          - mountPath: /fluentd/etc
+            name: fluentd-conf
       volumes:
         - name: gunicorn-conf
           configMap:
             name: gunicorn-cm
-        - name: gunicorn-access
+        - name: gunicorn-logs
           emptyDir: {}
-        - name: gunicorn-error
-          emptyDir: {}
+        - name: fluentd-conf
+          configMap:
+            name: web-fluent-cm
