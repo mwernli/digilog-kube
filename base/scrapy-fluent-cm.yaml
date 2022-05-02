@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scrapy-fluent-cm
+data:
+  fluent.conf: |
+    <source>
+      @type tail
+      path "/var/log/scrapy/processor.log"
+      pos_file /var/log/scrapy/processor.pos
+      format /^(?<time>[^\[]+) \[(?<process>[^\[]+)\] \[(?<logger>[^\[]+)\] (?<level>[^:]+): (?<message>.*)$/
+      time_format %Y-%m-%d %H:%M:%S
+      tag scrapy.processor
+    </source>
+
+    <source>
+      @type tail
+      path "/var/log/scrapy/crawl.log"
+      pos_file /var/log/scrapy/crawl.pos
+      format /^(?<time>[^\[]+) \[(?<process>[^\[]+)\] \[(?<logger>[^\[]+)\] (?<level>[^:]+): (?<message>.*)$/
+      time_format %Y-%m-%d %H:%M:%S
+      tag scrapy.crawl
+    </source>
+
+    <match scrapy.*>
+      @type loki
+      url "#{ENV['LOKI_URL']}"
+      extra_labels {"component":"scrapy"}
+      flush_interval 10s
+      flush_at_shutdown true
+      buffer_chunk_limit 1m
+    </match>
+

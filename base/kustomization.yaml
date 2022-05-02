@@ -21,4 +21,5 @@ resources:
   - web-service.yaml
   - ingress.yaml
   - scrapy-deployment.yaml
+  - scrapy-fluent-cm.yaml
   - flyway-job.yaml

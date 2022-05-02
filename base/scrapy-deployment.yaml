@@ -56,3 +56,22 @@ spec:
               name: mongodb-secret
               key: user
               optional: false
+        volumeMounts:
+          - mountPath: /var/log/scrapy
+            name: scrapy-logs
+      - name: scrapy-fluentd
+        image: grafana/fluent-plugin-loki:main-d320873-amd64
+        env:
+          - name: LOKI_URL
+            value: "http://$(LOKI_SERVICE_HOST):$(LOKI_SERVICE_PORT)"
+        volumeMounts:
+          - mountPath: /var/log/scrapy
+            name: scrapy-logs
+          - mountPath: /fluentd/etc
+            name: fluentd-conf
+      volumes:
+        - name: scrapy-logs
+          emptyDir: { }
+        - name: fluentd-conf
+          configMap:
+            name: scrapy-fluent-cm
