@@ -56,6 +56,8 @@ spec:
                   name: mongodb-secret
                   key: user
                   optional: false
+            - name: CRAWL_LOGGING_TARGET
+              value: '/var/log/scrapy/crawl.log'
           volumeMounts:
             - mountPath: /var/log/scrapy
               name: scrapy-logs
