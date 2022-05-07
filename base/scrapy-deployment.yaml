@@ -58,6 +58,8 @@ spec:
                   optional: false
             - name: CRAWL_LOGGING_TARGET
               value: '/var/log/scrapy/crawl.log'
+            - name: QUEUE_PROCESSOR_LOGGING_TARGET
+              value: '/var/log/scrapy/processor.log'
           volumeMounts:
             - mountPath: /var/log/scrapy
               name: scrapy-logs
