@@ -23,3 +23,5 @@ resources:
   - scrapy-deployment.yaml
   - scrapy-fluent-cm.yaml
   - flyway-job.yaml
+  - scheduler-test-job.yaml
+  - scheduler-fluent-cm.yaml
