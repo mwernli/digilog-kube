@@ -13,7 +13,7 @@ spec:
         - name: digilog-scheduler
           image: trephor/digilog-scheduler:0.1.1
           command: ["/usr/venv/bin/python"]
-#          args: ["/usr/src/scheduler.py", "calibrate", "municipality", "-84"]
+          args: ["/usr/src/scheduler.py", "calibrate", "municipality", "-84"]
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:
@@ -34,24 +34,5 @@ spec:
                   key: databaseName
                   optional: false
             - name: SCHEDULER_LOGGING_TARGET
-              value: '/var/log/scheduler/scheduler.log'
-          volumeMounts:
-            - mountPath: /var/log/scheduler
-              name: scheduler-logs
-        - name: scheduler-fluentd
-          image: grafana/fluent-plugin-loki:main-d320873-amd64
-          env:
-            - name: LOKI_URL
-              value: "http://$(LOKI_SERVICE_HOST):$(LOKI_SERVICE_PORT)"
-          volumeMounts:
-            - mountPath: /var/log/scheduler
-              name: scheduler-logs
-            - mountPath: /fluentd/etc
-              name: fluentd-conf
-      volumes:
-        - name: scheduler-logs
-          emptyDir: { }
-        - name: fluentd-conf
-          configMap:
-            name: scheduler-fluent-cm
-      restartPolicy: Never
+              value: 'LOKI'
+      restartPolicy: OnFailure
