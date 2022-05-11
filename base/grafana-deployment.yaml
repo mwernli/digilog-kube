@@ -20,6 +20,27 @@ spec:
         tier: logging
         run: grafana
     spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox:latest
+          securityContext:
+            privileged: true
+            runAsGroup: 0
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -c
+            - >-
+              id;
+              ls -la /var/lib/grafana;
+              mkdir -p /var/lib/grafana;
+              chown 472:472 /var/lib/grafana;
+              ls -la /var/lib/grafana;
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-vol
+              subPath: grafana
       containers:
         - name: digilog-grafana
           image: grafana/grafana:8.4.3

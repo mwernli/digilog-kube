@@ -20,9 +20,30 @@ spec:
         tier: logging
         run: loki
     spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox:latest
+          securityContext:
+            privileged: true
+            runAsGroup: 0
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -c
+            - >-
+              id;
+              ls -la /loki;
+              mkdir -p /loki;
+              chown 10001:10001 /loki;
+              ls -la /loki;
+          volumeMounts:
+            - mountPath: /loki
+              name: loki-vol
+              subPath: loki
       containers:
         - name: digilog-loki
-          image: grafana/loki:2.4.2
+          image: grafana/loki:v2.5.0-with-pr-6123-a630ae3
           ports:
             - containerPort: 3100
           volumeMounts:
