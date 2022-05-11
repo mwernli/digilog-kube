@@ -18,5 +18,5 @@ patchesStrategicMerge:
 patches:
   - target:
       kind: Ingress
-      name: web-ingress
+      name: ingress
     path: ingress-patch.json
