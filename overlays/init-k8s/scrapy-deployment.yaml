@@ -3,14 +3,23 @@ kind: Deployment
 metadata:
   name: scrapy
 spec:
+  replicas: 2
   template:
     spec:
       containers:
         - name: digilog-scrapy
           resources:
             limits:
-              cpu: 500m
-              memory: 2Gi
+              cpu: 250m
+              memory: 256Mi
             requests:
-              cpu: 500m
-              memory: 2Gi
+              cpu: 250m
+              memory: 256Mi
+        - name: scrapy-fluentd
+          resources:
+            limits:
+              cpu: 250m
+              memory: 256Mi
+            requests:
+              cpu: 250m
+              memory: 256Mi
