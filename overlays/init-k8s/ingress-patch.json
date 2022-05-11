@@ -2,11 +2,11 @@
   {
     "op": "add",
     "path": "/spec/rules/0/host",
-    "value": "app.digilog.localhost"
+    "value": "app.digilog.k8s.init-lab.ch"
   },
   {
     "op": "add",
     "path": "/spec/rules/1/host",
-    "value": "logs.digilog.localhost"
+    "value": "logs.digilog.k8s.init-lab.ch"
   }
 ]
