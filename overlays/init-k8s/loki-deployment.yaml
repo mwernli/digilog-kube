@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loki
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: fix-permissions
+          resources:
+            limits:
+              cpu: 100m
+              memory: 32Mi
+            requests:
+              cpu: 100m
+              memory: 32Mi
+      containers:
+        - name: digilog-loki
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 1000m
+              memory: 1Gi

@@ -1,15 +1,19 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-bases:
+resources:
   - ../../base
 patchesStrategicMerge:
   - postgres-pvc.yaml
   - mongodb-pvc.yaml
+  - loki-pvc.yaml
+  - grafana-pvc.yaml
   - flyway-job.yaml
   - postgres-deployment.yaml
   - mongodb-deployment.yaml
   - scrapy-deployment.yaml
   - web-deployment.yaml
+  - loki-deployment.yaml
+  - grafana-deployment.yaml
 
 patches:
   - target:
