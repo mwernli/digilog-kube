@@ -66,6 +66,10 @@ spec:
           env:
             - name: LOKI_URL
               value: "http://$(LOKI_SERVICE_HOST):$(LOKI_SERVICE_PORT)"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           volumeMounts:
             - mountPath: /var/log/gunicorn
               name: gunicorn-logs

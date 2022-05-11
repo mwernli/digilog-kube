@@ -21,11 +21,18 @@ data:
       time_format %Y-%m-%d %H:%M:%S
       tag scrapy.crawl
     </source>
-
+    
+    <filter scrapy.*>
+      @type record_transformer
+      <record>
+        tag ${tag}
+      </record>
+    </filter>
+    
     <match scrapy.*>
       @type loki
       url "#{ENV['LOKI_URL']}"
-      extra_labels {"component":"scrapy"}
+      extra_labels "{\"component\": \"scrapy\", \"pod\": \"#{ENV['POD_NAME']}\"}"
       flush_interval 10s
       flush_at_shutdown true
       buffer_chunk_limit 1m
