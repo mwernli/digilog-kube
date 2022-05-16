@@ -14,6 +14,7 @@ patchesStrategicMerge:
   - web-deployment.yaml
   - loki-deployment.yaml
   - grafana-deployment.yaml
+  - scheduler-test-job.yaml
 
 patches:
   - target:
