@@ -11,7 +11,8 @@ spec:
     spec:
       containers:
         - name: digilog-flyway
-          image: trephor/digilog-flyway:0.1.1
+          image: trephor/digilog-flyway:0.1
+          imagePullPolicy: Always
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:

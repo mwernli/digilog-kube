@@ -22,7 +22,8 @@ spec:
     spec:
       containers:
         - name: digilog-scrapy
-          image: trephor/digilog-scrapy:0.1.1
+          image: trephor/digilog-scrapy:0.1
+          imagePullPolicy: Always
           command: [ "python" ]
           args: [ "/src/queue_processor.py" ]
           env:

@@ -11,7 +11,8 @@ spec:
     spec:
       containers:
         - name: digilog-scheduler
-          image: trephor/digilog-scheduler:0.1.1
+          image: trephor/digilog-scheduler:0.1
+          imagePullPolicy: Always
           command: ["/usr/venv/bin/python"]
           args: ["/usr/src/scheduler.py", "calibrate", "municipality", "-84"]
           env:
@@ -35,4 +36,8 @@ spec:
                   optional: false
             - name: SCHEDULER_LOGGING_TARGET
               value: 'LOKI'
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
       restartPolicy: OnFailure
