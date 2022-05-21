@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mongodb
   labels:
@@ -7,6 +7,7 @@ metadata:
     tier: storage
     run: mongodb
 spec:
+  serviceName: mongodb
   replicas: 1
   selector:
     matchLabels:

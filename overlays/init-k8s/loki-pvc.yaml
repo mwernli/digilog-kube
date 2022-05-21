@@ -6,4 +6,4 @@ spec:
   resources:
     requests:
       storage: 15Gi
-  storageClassName: csi-cinder-sc-delete
+  storageClassName: csi-cinder-sc-retain

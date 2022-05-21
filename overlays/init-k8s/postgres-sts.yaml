@@ -1,12 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: mongodb
+  name: postgres
 spec:
   template:
     spec:
       containers:
-        - name: digilog-mongodb
+        - name: digilog-postgres
           resources:
             limits:
               cpu: 1000m

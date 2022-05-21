@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: grafana
   labels:
@@ -7,6 +7,7 @@ metadata:
     tier: logging
     run: grafana
 spec:
+  serviceName: grafana
   replicas: 1
   selector:
     matchLabels:

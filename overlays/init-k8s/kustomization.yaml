@@ -8,12 +8,12 @@ patchesStrategicMerge:
   - loki-pvc.yaml
   - grafana-pvc.yaml
   - flyway-job.yaml
-  - postgres-deployment.yaml
-  - mongodb-deployment.yaml
+  - postgres-sts.yaml
+  - mongodb-sts.yaml
   - scrapy-deployment.yaml
   - web-deployment.yaml
-  - loki-deployment.yaml
-  - grafana-deployment.yaml
+  - loki-sts.yaml
+  - grafana-sts.yaml
   - scheduler-test-job.yaml
 
 patches:

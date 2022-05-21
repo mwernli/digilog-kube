@@ -4,17 +4,17 @@ kind: Kustomization
 resources:
   - web-fluent-cm.yaml
   - gunicorn-cm.yaml
-  - loki-deployment.yaml
+  - loki-sts.yaml
   - loki-pvc.yaml
   - loki-service.yaml
   - grafana-pvc.yaml
-  - grafana-deployment.yaml
+  - grafana-sts.yaml
   - grafana-service.yaml
-  - postgres-deployment.yaml
+  - postgres-sts.yaml
   - postgres-pvc.yaml
   - postgres-service.yaml
   - postgres-cm.yaml
-  - mongodb-deployment.yaml
+  - mongodb-sts.yaml
   - mongodb-pvc.yaml
   - mongodb-service.yaml
   - web-deployment.yaml
