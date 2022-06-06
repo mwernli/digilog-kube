@@ -1,9 +1,11 @@
 from dataclasses import dataclass
-from typing import Union
+from typing import Union, Optional
+from arg_parsing import parse_args
 
 import yaml
 import os
 import re
+import sys
 
 
 def parse_gb(in_s: str) -> float:
@@ -51,9 +53,13 @@ def filename_filter(filename: str) -> bool:
     return filename.endswith('.yaml')
 
 
-def load_yaml_file(filename: str) -> dict:
-    with open(filename, 'r') as f:
-        return yaml.full_load(f)
+def load_yaml_file(filename: str) -> Optional[dict]:
+    try:
+        with open(filename, 'r') as f:
+            return yaml.full_load(f)
+    except Exception as e:
+        print(f'unable to load file {filename}: ERROR "{e}"')
+        return None
 
 
 REC_KINDS = {'Deployment', 'Job'}
@@ -106,7 +112,8 @@ REPLICAS = {'scrapy': 5}
 
 def summarize_dir(dirname: str):
     os.chdir(dirname)
-    yaml_files = list(map(load_yaml_file, filter(filename_filter, os.listdir())))
+    print(f'summarizing resource requests in path {dirname}')
+    yaml_files = list(filter(lambda d: d is not None, map(load_yaml_file, filter(filename_filter, os.listdir()))))
     rec_docs = filter(resource_filter, yaml_files)
     cpu_req_total = 0.0
     mem_req_total = 0.0
@@ -139,5 +146,30 @@ def summarize_dir(dirname: str):
     print(f'{spacer:20} {total_storage:<10.4g}')
 
 
+def split_yaml_stream(stream_file: str, target_dir: str):
+    print(f'writing stream {stream_file} to target dir {target_dir}')
+    os.makedirs(target_dir, exist_ok=True)
+    with open(stream_file, 'r') as f:
+        for doc in yaml.full_load_all(f):
+            name = safe_get(doc, ['metadata', 'name'])
+            k = safe_get(doc, ['kind'])
+            fname = os.path.join(target_dir, f'{k}-{name}.yaml')
+            with open(fname, 'w') as out_doc:
+                yaml.dump(doc, out_doc)
+
+
+def _get_overlays_path():
+    return os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'overlays'))
+
+
 if __name__ == '__main__':
-    summarize_dir('../overlays/init-k8s')
+    overlays_path = _get_overlays_path()
+    print(overlays_path)
+    args = parse_args(sys.argv[1:], overlays_path)
+    overlay_path = os.path.join(overlays_path, args.overlay)
+    match args.action:
+        case 'split':
+            split_yaml_stream(os.path.join(overlay_path, 'out.yaml'), os.path.join(overlay_path, 'split'))
+        case 'summarize':
+            summarize_dir(overlay_path)
+
