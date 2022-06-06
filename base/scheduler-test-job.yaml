@@ -34,6 +34,18 @@ spec:
                   name: postgres-cm
                   key: databaseName
                   optional: false
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: password
+                  optional: false
+            - name: MONGODB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: user
+                  optional: false
             - name: SCHEDULER_LOGGING_TARGET
               value: 'LOKI'
             - name: POD_NAME
