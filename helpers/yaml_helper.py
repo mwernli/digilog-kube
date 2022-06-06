@@ -8,6 +8,9 @@ import re
 import sys
 
 
+image_tag_pattern = re.compile(r'trephor/[^:]+:(\d+\.\d+(?:\.\d+)?)')
+
+
 def parse_gb(in_s: str) -> float:
     try:
         return float(re.match(r'(\d+(\.\d+)?)Gi', in_s, re.IGNORECASE).group(1))
@@ -158,18 +161,43 @@ def split_yaml_stream(stream_file: str, target_dir: str):
                 yaml.dump(doc, out_doc)
 
 
+def image_tag_handler(new_version):
+    base_path = os.path.join(_get_kustomize_root_path(), 'base')
+    yaml_files = filter(filename_filter, os.listdir(base_path))
+    to_update = {}
+    for filename in yaml_files:
+        fullpath = os.path.join(base_path, filename)
+        with open(fullpath, 'r') as file_handle:
+            content = yaml.full_load(file_handle)
+            if resource_filter(content):
+                containers = safe_get(content, ['spec', 'template', 'spec', 'containers'])
+                for c in containers:
+                    image = safe_get(c, ['image'])
+                    m = image_tag_pattern.match(image)
+                    if m:
+                        print(m)
+                        print(m.groupdict())
+
+
+def _get_kustomize_root_path():
+    return os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+
+
 def _get_overlays_path():
-    return os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'overlays'))
+    return os.path.join(_get_kustomize_root_path(), 'overlays')
 
 
 if __name__ == '__main__':
     overlays_path = _get_overlays_path()
-    print(overlays_path)
     args = parse_args(sys.argv[1:], overlays_path)
-    overlay_path = os.path.join(overlays_path, args.overlay)
+    overlay_path = os.path.join(overlays_path, args.overlay) if hasattr(args, 'overlay') else ''
     match args.action:
         case 'split':
             split_yaml_stream(os.path.join(overlay_path, 'out.yaml'), os.path.join(overlay_path, 'split'))
         case 'summarize':
             summarize_dir(overlay_path)
+        case 'image-tag':
+            image_tag_handler(args.update_image_tag)
+
+
 
