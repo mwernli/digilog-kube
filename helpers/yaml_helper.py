@@ -8,7 +8,7 @@ import re
 import sys
 
 
-image_tag_pattern = re.compile(r'trephor/[^:]+:(\d+\.\d+(?:\.\d+)?)')
+image_tag_pattern = re.compile(r'^(trephor/[^:]+):(\d+\.\d+(?:\.\d+)?)$')
 
 
 def parse_gb(in_s: str) -> float:
@@ -164,9 +164,9 @@ def split_yaml_stream(stream_file: str, target_dir: str):
 def image_tag_handler(new_version):
     base_path = os.path.join(_get_kustomize_root_path(), 'base')
     yaml_files = filter(filename_filter, os.listdir(base_path))
-    to_update = {}
     for filename in yaml_files:
         fullpath = os.path.join(base_path, filename)
+        update = False
         with open(fullpath, 'r') as file_handle:
             content = yaml.full_load(file_handle)
             if resource_filter(content):
@@ -175,8 +175,16 @@ def image_tag_handler(new_version):
                     image = safe_get(c, ['image'])
                     m = image_tag_pattern.match(image)
                     if m:
-                        print(m)
-                        print(m.groupdict())
+                        image, current_tag = m.groups()
+                        print(f'image {image} in {filename} currently using version {current_tag}')
+                        if new_version is not None:
+                            new_tag = f'{image}:{new_version}'
+                            c['image'] = new_tag
+                            update = True
+        if update:
+            print(f'updating image version in {filename} to {new_tag}')
+            with open(fullpath, 'w') as file_handle:
+                yaml.dump(content, file_handle)
 
 
 def _get_kustomize_root_path():
