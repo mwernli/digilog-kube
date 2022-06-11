@@ -1,86 +1,87 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scrapy
   labels:
     app: digilog
-    tier: crawling
     run: scrapy
+    tier: crawling
+  name: scrapy
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: digilog
-      tier: crawling
       run: scrapy
+      tier: crawling
   template:
     metadata:
       labels:
         app: digilog
-        tier: crawling
         run: scrapy
+        tier: crawling
     spec:
       containers:
-        - name: digilog-scrapy
-          image: trephor/digilog-scrapy:0.1
-          imagePullPolicy: Always
-          command: [ "python" ]
-          args: [ "/src/queue_processor.py" ]
-          env:
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: password
-                  optional: false
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: user
-                  optional: false
-            - name: POSTGRES_DB
-              valueFrom:
-                configMapKeyRef:
-                  name: postgres-cm
-                  key: databaseName
-                  optional: false
-            - name: MONGODB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: password
-                  optional: false
-            - name: MONGODB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: user
-                  optional: false
-            - name: CRAWL_LOGGING_TARGET
-              value: '/var/log/scrapy/crawl.log'
-            - name: QUEUE_PROCESSOR_LOGGING_TARGET
-              value: '/var/log/scrapy/processor.log'
-          volumeMounts:
-            - mountPath: /var/log/scrapy
-              name: scrapy-logs
-        - name: scrapy-fluentd
-          image: grafana/fluent-plugin-loki:main-d320873-amd64
-          env:
-            - name: LOKI_URL
-              value: "http://$(LOKI_SERVICE_HOST):$(LOKI_SERVICE_PORT)"
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-          volumeMounts:
-            - mountPath: /var/log/scrapy
-              name: scrapy-logs
-            - mountPath: /fluentd/etc
-              name: fluentd-conf
+      - args:
+        - /src/queue_processor.py
+        command:
+        - python
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: databaseName
+              name: postgres-cm
+              optional: false
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mongodb-secret
+              optional: false
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: mongodb-secret
+              optional: false
+        - name: CRAWL_LOGGING_TARGET
+          value: /var/log/scrapy/crawl.log
+        - name: QUEUE_PROCESSOR_LOGGING_TARGET
+          value: /var/log/scrapy/processor.log
+        image: trephor/digilog-scrapy:0.1.7
+        name: digilog-scrapy
+        volumeMounts:
+        - mountPath: /var/log/scrapy
+          name: scrapy-logs
+      - env:
+        - name: LOKI_URL
+          value: http://$(LOKI_SERVICE_HOST):$(LOKI_SERVICE_PORT)
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        image: grafana/fluent-plugin-loki:main-d320873-amd64
+        name: scrapy-fluentd
+        volumeMounts:
+        - mountPath: /var/log/scrapy
+          name: scrapy-logs
+        - mountPath: /fluentd/etc
+          name: fluentd-conf
       volumes:
-        - name: scrapy-logs
-          emptyDir: { }
-        - name: fluentd-conf
-          configMap:
-            name: scrapy-fluent-cm
+      - emptyDir: {}
+        name: scrapy-logs
+      - configMap:
+          name: scrapy-fluent-cm
+        name: fluentd-conf

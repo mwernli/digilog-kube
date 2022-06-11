@@ -1,87 +1,86 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web
   labels:
     app: digilog
-    tier: frontend
     run: web
+    tier: frontend
+  name: web
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: digilog
-      tier: frontend
       run: web
+      tier: frontend
   template:
     metadata:
       labels:
         app: digilog
-        tier: frontend
         run: web
+        tier: frontend
     spec:
       containers:
-        - name: digilog-web
-          image: trephor/digilog-web:0.1
-          imagePullPolicy: Always
-          env:
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: password
-                  optional: false
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: user
-                  optional: false
-            - name: POSTGRES_DB
-              valueFrom:
-                configMapKeyRef:
-                  name: postgres-cm
-                  key: databaseName
-                  optional: false
-            - name: MONGODB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: password
-                  optional: false
-            - name: MONGODB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: user
-                  optional: false
-          ports:
-            - containerPort: 5000
-          volumeMounts:
-            - mountPath: /etc/config
-              name: gunicorn-conf
-            - mountPath: /var/log/gunicorn
-              name: gunicorn-logs
-        - name: web-fluentd
-          image: grafana/fluent-plugin-loki:main-d320873-amd64
-          env:
-            - name: LOKI_URL
-              value: "http://$(LOKI_SERVICE_HOST):$(LOKI_SERVICE_PORT)"
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-          volumeMounts:
-            - mountPath: /var/log/gunicorn
-              name: gunicorn-logs
-            - mountPath: /fluentd/etc
-              name: fluentd-conf
+      - env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: postgres-secret
+              optional: false
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: databaseName
+              name: postgres-cm
+              optional: false
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mongodb-secret
+              optional: false
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: mongodb-secret
+              optional: false
+        image: trephor/digilog-web:0.1.7
+        name: digilog-web
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - mountPath: /etc/config
+          name: gunicorn-conf
+        - mountPath: /var/log/gunicorn
+          name: gunicorn-logs
+      - env:
+        - name: LOKI_URL
+          value: http://$(LOKI_SERVICE_HOST):$(LOKI_SERVICE_PORT)
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        image: grafana/fluent-plugin-loki:main-d320873-amd64
+        name: web-fluentd
+        volumeMounts:
+        - mountPath: /var/log/gunicorn
+          name: gunicorn-logs
+        - mountPath: /fluentd/etc
+          name: fluentd-conf
       volumes:
-        - name: gunicorn-conf
-          configMap:
-            name: gunicorn-cm
-        - name: gunicorn-logs
-          emptyDir: { }
-        - name: fluentd-conf
-          configMap:
-            name: web-fluent-cm
+      - configMap:
+          name: gunicorn-cm
+        name: gunicorn-conf
+      - emptyDir: {}
+        name: gunicorn-logs
+      - configMap:
+          name: web-fluent-cm
+        name: fluentd-conf
