@@ -29,6 +29,6 @@ spec:
               key: databaseName
               name: postgres-cm
               optional: false
-        image: trephor/digilog-flyway:0.1.7
+        image: trephor/digilog-flyway:0.1.9
         name: digilog-flyway
       restartPolicy: OnFailure

@@ -54,6 +54,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        image: trephor/digilog-scheduler:0.1.7
+        image: trephor/digilog-scheduler:0.1.9
         name: digilog-scheduler
       restartPolicy: OnFailure
