@@ -60,7 +60,7 @@ spec:
           value: /var/log/scrapy/crawl.log
         - name: QUEUE_PROCESSOR_LOGGING_TARGET
           value: /var/log/scrapy/processor.log
-        image: trephor/digilog-scrapy:0.1.9
+        image: trephor/digilog-scrapy:0.2.1
         name: digilog-scrapy
         volumeMounts:
         - mountPath: /var/log/scrapy
