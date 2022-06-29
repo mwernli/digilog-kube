@@ -65,7 +65,7 @@ def load_yaml_file(filename: str) -> Optional[dict]:
         return None
 
 
-REC_KINDS = {'Deployment', 'Job'}
+REC_KINDS = {'Deployment', 'Job', 'CronJob', 'StatefulSet'}
 
 
 def resource_filter(yaml_file: dict) -> bool:
@@ -98,9 +98,16 @@ def get_resources(resource_entry: dict) -> ResourceEntry:
     return ResourceEntry(resource_entry.get('cpu'), resource_entry.get('memory'))
 
 
+def get_containers(yaml_file: dict) -> dict:
+    if yaml_file.get('kind') == 'CronJob':
+        return safe_get(yaml_file, ['spec', 'jobTemplate', 'spec', 'template', 'spec', 'containers'])
+    else:
+        return safe_get(yaml_file, ['spec', 'template', 'spec', 'containers'])
+
+
 def file_record(yaml_file: dict) -> list[FileRecord]:
     name = safe_get(yaml_file, ['metadata', 'name'])
-    containers = safe_get(yaml_file, ['spec', 'template', 'spec', 'containers'])
+    containers = get_containers(yaml_file)
     recs = []
     for c in containers:
         c_name = c.get('name')
@@ -131,10 +138,10 @@ def summarize_dir(dirname: str):
             cpu_lim_total += m*rec.limits.get_cpu()
             mem_lim_total += m*rec.limits.get_mem_gb()
             name = f'{rec.resource_name} (x{m})'
-            print(f'{name:20} {rec.container_name:20} {rec.requests.cpu:10} {rec.requests.memory:10} {rec.limits.cpu:10} {rec.limits.memory:10}')
+            print(f'{name:30} {rec.container_name:30} {rec.requests.cpu:10} {rec.requests.memory:10} {rec.limits.cpu:10} {rec.limits.memory:10}')
     spacer = 'TOTALS:'
-    print(f'{"=":=>85}')
-    print(f'{spacer:41} {cpu_req_total:<10.4g} {mem_req_total:<10.4g} {cpu_lim_total:<10.4g} {mem_lim_total:<10.4g}')
+    print(f'{"=":=>105}')
+    print(f'{spacer:61} {cpu_req_total:<10.4g} {mem_req_total:<10.4g} {cpu_lim_total:<10.4g} {mem_lim_total:<10.4g}')
     print('\n')
 
     print('PVC SUMMARY:')
@@ -170,7 +177,7 @@ def image_tag_handler(new_version):
         with open(fullpath, 'r') as file_handle:
             content = yaml.full_load(file_handle)
             if resource_filter(content):
-                containers = safe_get(content, ['spec', 'template', 'spec', 'containers'])
+                containers = get_containers(content)
                 for c in containers:
                     image = safe_get(c, ['image'])
                     m = image_tag_pattern.match(image)
