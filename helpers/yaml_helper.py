@@ -20,7 +20,7 @@ def parse_gb(in_s: str) -> float:
 
 def parse_mb(in_s: str) -> float:
     try:
-        return float(re.match(r'(\d+(\.\d+)?)Mi', in_s, re.IGNORECASE).group(1)) / 1000
+        return float(re.match(r'(\d+(\.\d+)?)Mi', in_s, re.IGNORECASE).group(1)) / 1024
     except Exception as e:
         print(e)
         print(in_s)
