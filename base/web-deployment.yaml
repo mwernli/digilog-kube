@@ -52,7 +52,7 @@ spec:
               key: user
               name: mongodb-secret
               optional: false
-        image: trephor/digilog-web:0.2.1
+        image: trephor/digilog-web:0.2.2
         name: digilog-web
         ports:
         - containerPort: 5000
