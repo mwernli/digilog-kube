@@ -1,0 +1,67 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: url-checker
+spec:
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      completions: 1
+      parallelism: 1
+      template:
+        metadata:
+          name: url-checker
+        spec:
+          containers:
+          - args:
+            - /usr/src/scheduler.py
+            - analyse
+            - urls
+            - -s
+            - '15'
+            - -m
+            - '3'
+            command:
+            - /usr/venv/bin/python
+            env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: postgres-secret
+                  optional: false
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: postgres-secret
+                  optional: false
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: databaseName
+                  name: postgres-cm
+                  optional: false
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: mongodb-secret
+                  optional: false
+            - name: MONGODB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: mongodb-secret
+                  optional: false
+            - name: SCHEDULER_LOGGING_TARGET
+              value: LOKI
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            image: trephor/digilog-scheduler:0.2.2
+            name: digilog-url-checker
+          restartPolicy: OnFailure
+  schedule: 35 */3 * * *
+  startingDeadlineSeconds: 5400

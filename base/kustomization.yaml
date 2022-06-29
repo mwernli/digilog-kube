@@ -24,3 +24,7 @@ resources:
   - scrapy-fluent-cm.yaml
   - flyway-job.yaml
   - scheduler-test-job.yaml
+  - cj-url-checker.yaml
+  - cj-calibration-scheduler.yaml
+  - cj-calibration-analyser.yaml
+  - cj-crawl-scheduler.yaml
