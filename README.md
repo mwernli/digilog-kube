@@ -34,7 +34,7 @@
 * To migrate the PostgreSQL database, delete the `flyway-migrate` Job if it already exists before applying the Job (`kubectl delete job flyway-migrate`)
 * To preview Kustomization results execute `kubectl kustomize /path/to/overlay -o out.yaml`
 * To get individual resource files:
-  * Create an up-to-date `out.yaml` file as indicated in the first bullet
+  * Create an up-to-date `out.yaml` file as indicated in the previous bullet
   * Create a Python virtual environment from `helpers/requirements.txt` and activate it
   * Use `python yaml_helper.py split <overlay>` to create a folder with individual resource files. These can then be applied to the cluster individually
   * These files can now be applied individually to the cluster using `kubectl apply -f <file>`
